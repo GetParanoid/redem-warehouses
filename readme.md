@@ -6,6 +6,8 @@ Warning: this is not a drag and drop script, some development work is needed alo
 redem-warehouses adds storage warehouses around the map of RDR2. These warehouses have independent storages bound to the player's character, and are not linked together. What you place in Rhodes won't be in St. Denis. You're able to buy and even sell back your warehouses.
 
 ## 1.Requirements
+[redemrp](https://github.com/RedEM-RP/redem_roleplay)
+
 [qbr-menu](https://github.com/qbcore-redm-framework/qbr-menu)
 
 [NextGen Callbacks](https://github.com/itsxScrubz/callbacks)
