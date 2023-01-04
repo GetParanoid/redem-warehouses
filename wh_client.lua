@@ -1,8 +1,8 @@
 Callbacks = exports['callbacks']:FetchCallbacks()
 --! Start Menu Logic
-local ownsWarehouse = nil
 RegisterNetEvent('warehouse:Client:openWhMenu')
 AddEventHandler('warehouse:Client:openWhMenu', function(location)
+    local ownsWarehouse = nil
     local whName = location
     Callbacks:TriggerCallback('warehouse:ownsWarehouse', function(data)
         if data == true then
@@ -11,7 +11,7 @@ AddEventHandler('warehouse:Client:openWhMenu', function(location)
             ownsWarehouse = false
         end
     end, location)
-    Wait(250)
+    while ownsWarehouse == nil do Wait(5) end
     if ownsWarehouse then
         local WH_MENU = {
             {

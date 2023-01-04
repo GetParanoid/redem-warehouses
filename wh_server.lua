@@ -1,25 +1,16 @@
+local CreatedLockers, whData, data = {}
+local identifier, charid, warehouseID, identCharID, fetched, rlFetched = nil
 Callbacks = exports['callbacks']:FetchCallbacks()
-data = {}
 TriggerEvent("redemrp_inventory:getData",function(call)
-		data = call
+	data = call
 end)
 
-local CreatedLockers = {}
-local identifier = nil
-local charid = nil
-local warehouseID = nil
-local identCharID = nil
-local fetched = nil
-local whData
 
 RegisterNetEvent('warehouse:Server:buyWh')
 AddEventHandler('warehouse:Server:buyWh', function(location)
     local _source = source
-    local money = nil
+    local money, rpName = nil
     local paid = false
-    local firstname = ''
-    local lastname = ''
-    local rpName = ''
     TriggerEvent('redemrp:getPlayerFromId', _source, function(user)
         identifier = user.getIdentifier()
         charid = user.getSessionVar("charid")
@@ -27,18 +18,14 @@ AddEventHandler('warehouse:Server:buyWh', function(location)
         if money >= 30 then
             user.removeMoney(30)
             paid = true
-            lastname = user.getLastname()
-            firstname = user.getFirstname()
-            rpName = firstname.." "..lastname
+            rpName = user.getFirstname() ..' '.. user.getLastname()
             --TriggerEvent("logs:Server:CreateLog", "warehouse", "Player Bought Warehouse", "pink", " **RP NAME:** "..rpName.."\n**STEAM:** "..GetPlayerName(_source).."\n** SERVER ID: **"..tostring(_source).."\n** Location: **"  ..location, false)
         end
     end)
     if paid then
         for k,v in pairs(Locations) do
             if location == Locations[k]['Name'] then
-                local whX = Locations[k]["Coords"].x
-                local whY = Locations[k]["Coords"].y
-                local whZ = Locations[k]["Coords"].z
+                local whX, whY, whZ = Locations[k]["Coords"].x, Locations[k]["Coords"].y, Locations[k]["Coords"].z
             end
         end
         identCharID = identifier.."_"..charid
@@ -69,14 +56,10 @@ AddEventHandler('warehouse:Server:sellWh', function(location)
     data.updateLockers(-1)
     if identifier and charid and warehouseID then
         if checkLockerExist(warehouseID) then
-            local firstname = ''
-            local lastname = ''
-            local rpName = ''
+            local rpName = nil
             TriggerEvent('redemrp:getPlayerFromId', _source, function(user)
                 user.addMoney(30)
-                lastname = user.getLastname()
-                firstname = user.getFirstname()
-                rpName = firstname.." "..lastname
+                rpName = user.getFirstname() .. ' '.. user.getLastname()
                 --TriggerEvent("logs:Server:CreateLog", "warehouse", "Player Sold Warehouse", "turqois", " **RP NAME:** "..rpName.."\n**STEAM:** "..GetPlayerName(_source).."\n** SERVER ID: **"..tostring(_source).."\n** Location: **"  ..location, false)
             end)
             --TriggerClientEvent('notify:Notify:showGeneralNotificationSuccess', _source, "Success","Warehouse Sold", 2500)
@@ -96,9 +79,7 @@ AddEventHandler('warehouse:Server:openWh', function(location)
     end)
     for k,v in pairs(Locations) do
         if location == Locations[k]['Name'] then
-            local whX = Locations[k]["Coords"].x
-            local whY = Locations[k]["Coords"].y
-            local whZ = Locations[k]["Coords"].z
+            local whX, whY, whZ = Locations[k]["Coords"].x, Locations[k]["Coords"].y, Locations[k]["Coords"].z
         end
     end
     identCharID = identifier.."_"..charid
@@ -107,6 +88,7 @@ AddEventHandler('warehouse:Server:openWh', function(location)
     data.updateLockers(-1)
     Wait(250)
 
+    --! WIP for checking if WH is open, to allow sharing of warehouses and to prevent duping.
     -- for k,v in ipairs(whData) do
         -- if v['identifier'] == warehouseID then
             -- if not v['isOpen'] then
@@ -133,6 +115,7 @@ AddEventHandler('onResourceStart', function(resource)
         whData = {}
         Wait(250)
         getRegisteredLockers()
+        registerCallbacks()
     end
 end)
 
@@ -150,11 +133,12 @@ function checkLockerExist(warehouseID)
         end
     end)
     while fetched == nil do Wait(1) end
-        return fetched
+
+    return fetched
 end
 
 function getRegisteredLockers()
-    local rlFetched = false
+    rlFetched = false
     MySQL.Async.fetchAll("SELECT * FROM `user_locker` WHERE `type`=@type", {["@type"]='wh' }, function(result)
         while not result do
             Citizen.Wait(1)
@@ -170,6 +154,8 @@ function getRegisteredLockers()
         rlFetched = true
     end)
     while not rlFetched do Wait(1) end
+
+    return rlFetched
 end
 
 
@@ -191,4 +177,3 @@ function registerCallbacks()
         end
     end)
 end
-registerCallbacks()
